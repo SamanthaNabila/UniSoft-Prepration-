@@ -35,6 +35,12 @@ class ApplyDiscountTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             apply_discount([], Decimal("100.01"))
 
+    def test_rejects_negative_quantity(self) -> None:
+        items = [{"name": "Item", "unit_price": Decimal("10.00"), "quantity": -1}]
+
+        with self.assertRaises(ValueError):
+            apply_discount(items, Decimal("10"))
+
 
 
 

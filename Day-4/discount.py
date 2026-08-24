@@ -13,6 +13,9 @@ def apply_discount(items: list[Item], discount_percent: Decimal) -> Decimal:
     if discount_percent < Decimal("0") or discount_percent > Decimal("100"):
         raise ValueError("discount_percent must be between 0 and 100")
 
+    if not items:
+        raise ValueError("items cannot be empty")
+
     if any(item["quantity"] < 0 for item in items):
         raise ValueError("item quantity cannot be negative")
 

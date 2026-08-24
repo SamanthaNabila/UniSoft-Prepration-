@@ -41,6 +41,14 @@ class ApplyDiscountTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             apply_discount(items, Decimal("10"))
 
+    def test_rounds_each_item_before_total(self) -> None:
+        items = [
+            {"name": "Item A", "unit_price": Decimal("0.005"), "quantity": 1},
+            {"name": "Item B", "unit_price": Decimal("0.005"), "quantity": 1},
+        ]
+
+        self.assertEqual(apply_discount(items, Decimal("0")), Decimal("0.02"))
+
 
 
 

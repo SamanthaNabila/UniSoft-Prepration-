@@ -16,8 +16,15 @@ def apply_discount(items: list[Item], discount_percent: Decimal) -> Decimal:
     if not items:
         raise ValueError("items cannot be empty")
 
-    if any(item["quantity"] < 0 for item in items):
-        raise ValueError("item quantity cannot be negative")
+    for item in items:
+        if not isinstance(item["unit_price"], Decimal):
+            raise TypeError("item unit_price must be a Decimal")
+        if item["unit_price"] < Decimal("0"):
+            raise ValueError("item unit_price cannot be negative")
+        if not isinstance(item["quantity"], int) or isinstance(item["quantity"], bool):
+            raise TypeError("item quantity must be an integer")
+        if item["quantity"] < 0:
+            raise ValueError("item quantity cannot be negative")
 
     discount_multiplier = Decimal("1") - discount_percent / Decimal("100")
     discounted_total = sum(

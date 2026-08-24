@@ -19,8 +19,11 @@ def build_parser():
     list_parser = subparsers.add_parser("list")
     list_parser.add_argument("--file", default=DEFAULT_NOTES_FILE)
 
-    for command in ("search", "delete"):
-        subparsers.add_parser(command)
+    search_parser = subparsers.add_parser("search")
+    search_parser.add_argument("query")
+    search_parser.add_argument("--file", default=DEFAULT_NOTES_FILE)
+
+    subparsers.add_parser("delete")
 
     return parser
 
@@ -37,6 +40,13 @@ def main(argv=None):
     if args.command == "list":
         for note in load_notes(args.file):
             print(f"{note['title']}: {note['body']}")
+        return
+
+    if args.command == "search":
+        query = args.query.casefold()
+        for note in load_notes(args.file):
+            if query in note["title"].casefold() or query in note["body"].casefold():
+                print(f"{note['title']}: {note['body']}")
         return
 
     print("not implemented")

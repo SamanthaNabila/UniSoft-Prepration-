@@ -73,7 +73,62 @@ def test_search_prints_nothing_without_matches_or_notes(tmp_path, capsys):
     assert capsys.readouterr().out == ""
 
 
-def test_delete_remains_not_implemented(capsys):
-    main(["delete"])
+def test_deletes_a_note_after_confirmation(tmp_path, monkeypatch):
+    notes_file = tmp_path / "notes.json"
+    notes_file.write_text(
+        '[{"title": "First", "body": "One"}, '
+        '{"title": "Second", "body": "Two"}]'
+    )
+    monkeypatch.setattr("builtins.input", lambda prompt: "y")
 
-    assert capsys.readouterr().out == "not implemented\n"
+    main(["delete", "First", "--file", str(notes_file)])
+
+    assert notes_file.read_text() == '[{"title": "Second", "body": "Two"}]'
+
+
+def test_delete_requires_confirmation(tmp_path, monkeypatch):
+    notes_file = tmp_path / "notes.json"
+    notes_file.write_text('[{"title": "First", "body": "One"}]')
+    monkeypatch.setattr("builtins.input", lambda prompt: "n")
+
+    main(["delete", "First", "--file", str(notes_file)])
+
+    assert notes_file.read_text() == '[{"title": "First", "body": "One"}]'
+
+
+def test_delete_cancels_for_blank_or_invalid_confirmation(tmp_path, monkeypatch):
+    notes_file = tmp_path / "notes.json"
+    notes_file.write_text('[{"title": "First", "body": "One"}]')
+
+    for confirmation in ("", "maybe"):
+        monkeypatch.setattr("builtins.input", lambda prompt, answer=confirmation: answer)
+
+        main(["delete", "First", "--file", str(notes_file)])
+
+        assert notes_file.read_text() == '[{"title": "First", "body": "One"}]'
+
+
+def test_delete_does_nothing_for_missing_note_or_file(tmp_path, monkeypatch):
+    notes_file = tmp_path / "notes.json"
+    monkeypatch.setattr("builtins.input", lambda prompt: "yes")
+
+    main(["delete", "Missing", "--file", str(notes_file)])
+
+    assert not notes_file.exists()
+
+
+def test_delete_accepts_yes_confirmation_and_preserves_other_notes(tmp_path, monkeypatch):
+    notes_file = tmp_path / "notes.json"
+    notes_file.write_text(
+        '[{"title": "First", "body": "One"}, '
+        '{"title": "Second", "body": "Two"}, '
+        '{"title": "Third", "body": "Three"}]'
+    )
+    monkeypatch.setattr("builtins.input", lambda prompt: "YES")
+
+    main(["delete", "Second", "--file", str(notes_file)])
+
+    assert notes_file.read_text() == (
+        '[{"title": "First", "body": "One"}, '
+        '{"title": "Third", "body": "Three"}]'
+    )

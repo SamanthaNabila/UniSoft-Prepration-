@@ -23,7 +23,9 @@ def build_parser():
     search_parser.add_argument("query")
     search_parser.add_argument("--file", default=DEFAULT_NOTES_FILE)
 
-    subparsers.add_parser("delete")
+    delete_parser = subparsers.add_parser("delete")
+    delete_parser.add_argument("title")
+    delete_parser.add_argument("--file", default=DEFAULT_NOTES_FILE)
 
     return parser
 
@@ -47,6 +49,16 @@ def main(argv=None):
         for note in load_notes(args.file):
             if query in note["title"].casefold() or query in note["body"].casefold():
                 print(f"{note['title']}: {note['body']}")
+        return
+
+    if args.command == "delete":
+        notes = load_notes(args.file)
+        for note_index, note in enumerate(notes):
+            if note["title"] == args.title:
+                confirmation = input(f"Delete '{args.title}'? [y/N] ")
+                if confirmation.casefold() in ("y", "yes"):
+                    save_notes(args.file, notes[:note_index] + notes[note_index + 1 :])
+                return
         return
 
     print("not implemented")

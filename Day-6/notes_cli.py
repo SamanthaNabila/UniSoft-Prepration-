@@ -34,6 +34,9 @@ def main(argv=None):
     args = build_parser().parse_args(argv)
 
     if args.command == "add":
+        if not args.body:
+            raise ValueError("body cannot be empty")
+
         notes = load_notes(args.file)
         notes.append({"title": args.title, "body": args.body})
         save_notes(args.file, notes)

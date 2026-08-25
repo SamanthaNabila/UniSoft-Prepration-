@@ -1,3 +1,5 @@
+import pytest
+
 from notes_cli import main
 
 
@@ -7,6 +9,15 @@ def test_adds_a_note(tmp_path):
     main(["add", "Buy milk", "Remember the milk", "--file", str(notes_file)])
 
     assert notes_file.read_text() == '[{"title": "Buy milk", "body": "Remember the milk"}]'
+
+
+def test_rejects_a_note_with_an_empty_body(tmp_path):
+    notes_file = tmp_path / "notes.json"
+
+    with pytest.raises(ValueError, match="body cannot be empty"):
+        main(["add", "Empty note", "", "--file", str(notes_file)])
+
+    assert not notes_file.exists()
 
 
 def test_lists_notes(tmp_path, capsys):

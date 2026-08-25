@@ -35,6 +35,17 @@ def test_lists_when_there_are_no_notes(tmp_path, capsys):
     assert capsys.readouterr().out == ""
 
 
+def test_handles_corrupt_json_file_gracefully(tmp_path, capsys):
+    notes_file = tmp_path / "notes.json"
+    notes_file.write_text("{not valid json")
+
+    with pytest.raises(SystemExit) as error:
+        main(["list", "--file", str(notes_file)])
+
+    assert error.value.code == 1
+    assert "Invalid notes file" in capsys.readouterr().err
+
+
 def test_adds_multiple_notes_and_lists_them(tmp_path, capsys):
     notes_file = tmp_path / "notes.json"
 

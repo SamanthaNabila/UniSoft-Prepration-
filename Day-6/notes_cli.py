@@ -1,4 +1,6 @@
 import argparse
+import json
+import sys
 
 from app.storage import load_notes, save_notes
 
@@ -43,7 +45,13 @@ def main(argv=None):
         return
 
     if args.command == "list":
-        for note in load_notes(args.file):
+        try:
+            notes = load_notes(args.file)
+        except json.JSONDecodeError:
+            print(f"Invalid notes file: {args.file}", file=sys.stderr)
+            raise SystemExit(1)
+
+        for note in notes:
             print(f"{note['title']}: {note['body']}")
         return
 

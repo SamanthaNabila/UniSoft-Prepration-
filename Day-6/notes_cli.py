@@ -41,7 +41,11 @@ def main(argv=None):
 
         notes = load_notes(args.file)
         notes.append({"title": args.title, "body": args.body})
-        save_notes(args.file, notes)
+        try:
+            save_notes(args.file, notes)
+        except PermissionError:
+            print(f"Cannot write notes file: {args.file}", file=sys.stderr)
+            raise SystemExit(1)
         return
 
     if args.command == "list":

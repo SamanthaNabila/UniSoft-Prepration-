@@ -1,0 +1,7 @@
+## DeepSeek-V4 vs GLM-5.2 vs Kimi K3
+
+| AI | Company | Main Focus | Vendor's Main Claim | Best For | Best Simple Use Case | Why the Architecture Matters | Big Architecture Idea | Multimodal | Main Thing to Remember |
+|---|---|---|---|---|---|---|---|---|---|
+| **DeepSeek-V4** | DeepSeek | Reasoning, Coding & Long Context | Very strong open-source model with strong reasoning/coding and efficient 1M-token context | Difficult reasoning, coding, math & large documents | **"Solve this difficult problem and write the code."** | Makes 1M-token context more efficient | **Hybrid Attention (CSA + HCA)** | Not the main focus in the provided information | 🧠 **Think + Code** |
+| **GLM-5.2** | Z.ai | Long-Horizon Work, Coding & Agents | **Solid 1M context** that can stably support long-horizon work | Long multi-step tasks, coding agents & terminal work | **"Work through this large project step-by-step."** | Reduces computation and improves efficiency at 1M context | **IndexShare + improved MTP** | Not the main focus in the provided information | 🔄 **Long Work** |
+| **Kimi K3** | Moonshot AI | Agentic Engineering, Coding & Multimodal | Can handle **long engineering sessions with minimal human oversight** | Autonomous software engineering, large repositories & multimodal tasks | **"Take this large project, understand it, use tools and work on it."** | Designed for large-scale, long-context agentic work | **KDA + Attention Residuals + Stable LatentMoE** | **Yes — Text + Image + Video** | 🤖 **AI Engineer** |

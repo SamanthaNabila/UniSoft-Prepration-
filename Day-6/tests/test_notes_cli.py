@@ -46,6 +46,21 @@ def test_handles_corrupt_json_file_gracefully(tmp_path, capsys):
     assert "Invalid notes file" in capsys.readouterr().err
 
 
+def test_handles_read_only_notes_file_gracefully(tmp_path, monkeypatch, capsys):
+    notes_file = tmp_path / "notes.json"
+
+    def raise_permission_error(path, notes):
+        raise PermissionError("notes file is read-only")
+
+    monkeypatch.setattr("notes_cli.save_notes", raise_permission_error)
+
+    with pytest.raises(SystemExit) as error:
+        main(["add", "A note", "Some text", "--file", str(notes_file)])
+
+    assert error.value.code == 1
+    assert "Cannot write notes file" in capsys.readouterr().err
+
+
 def test_adds_multiple_notes_and_lists_them(tmp_path, capsys):
     notes_file = tmp_path / "notes.json"
 

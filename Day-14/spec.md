@@ -21,13 +21,26 @@ Implement a clean Light / Dark Mode toggle feature for a landing page. The user 
 - [ ] User theme preference is saved in `localStorage` so the mode persists upon page refreshes.
 - [ ] On initial page load, the app checks `localStorage`; if no saved state exists, it defaults to Light Mode.
 
+- [ ] **Navigation & Branding:**
+  - Header/Navbar must feature a clean brand name (e.g., `BrandName` or `DevStudio`) or an icon logo.
+  - **STRICT RULE:** Do NOT use lab internal names, day counts, or exercise numbers (e.g., "Day 14", "Lab 9", "Assignment") as the visible logo or brand text in the header.
+- [ ] **Typography & Layout:**
+  - Clean layout with centered container, modern sans-serif fonts, and soft padding/spacing.
+  - No raw unstyled HTML default elements.
+- [ ] **Theme Functionality:**
+  - Toggle switch in the header top-right corner.
+  - Inverts background colors, text colors, and card borders dynamically.
+  - Saves choice to `localStorage`.
+
 ## 4. Out of Scope
 
 - Auto-detecting system OS theme preference (`prefers-color-scheme`) is strictly excluded.
 - No additional color themes (such as Sepia, Solarized, or Blue) beyond Light and Dark modes.
 - No complex 3D CSS animations or heavy JavaScript transition libraries.
 - No third-party CSS frameworks (e.g., Bootstrap, Tailwind CSS).
+- Internal project metadata or lab tracking titles inside the public UI header.
 
 ## 5. Spec Change Log
 
 - 2026-08-26: Initial spec created for Day 14 Lab 9 task.
+- 2026-08-26: Added strict naming convention rules for Header/Logo to prevent internal metadata (e.g., "Day 14") from appearing as brand text.

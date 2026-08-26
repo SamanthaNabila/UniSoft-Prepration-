@@ -38,13 +38,6 @@
         border-radius: 6px;
         font-size: 1rem;
     }
-    select {
-        padding: 10px 8px;
-        border: 1px solid #d0d7de;
-        border-radius: 6px;
-        font-size: 1rem;
-        background: #fff;
-    }
     button {
         cursor: pointer;
         border: none;
@@ -96,51 +89,15 @@
         color: #9aa1a9;
         padding: 20px 0;
     }
-    .priority-badge {
-        font-size: 0.7rem;
-        font-weight: 600;
-        padding: 2px 8px;
-        border-radius: 999px;
-        text-transform: uppercase;
-        white-space: nowrap;
-    }
-    .priority-badge.low {
-        background: #e3f6e5;
-        color: #1a7f37;
-    }
-    .priority-badge.medium {
-        background: #fff3d6;
-        color: #9a6700;
-    }
-    .priority-badge.high {
-        background: #fde2e1;
-        color: #cf222e;
-    }
-    li select.priority-select {
-        font-size: 0.8rem;
-        padding: 4px 6px;
-    }
-    .error-message {
-        color: #cf222e;
-        font-size: 0.85rem;
-        margin: -12px 0 16px;
-        min-height: 1em;
-    }
 </style>
 </head>
 <body>
 <div class="container">
     <h1>My Todos</h1>
     <form id="todo-form">
-        <input type="text" id="todo-input" placeholder="What needs to be done?" autocomplete="off" maxlength="100" required>
-        <select id="priority-input">
-            <option value="LOW">Low</option>
-            <option value="MEDIUM" selected>Medium</option>
-            <option value="HIGH">High</option>
-        </select>
+        <input type="text" id="todo-input" placeholder="What needs to be done?" autocomplete="off" required>
         <button type="submit">Add</button>
     </form>
-    <p class="error-message" id="error-message"></p>
     <ul id="todo-list"></ul>
 </div>
 <script src="app.js"></script>

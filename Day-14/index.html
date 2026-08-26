@@ -1,37 +1,49 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Light / Dark Mode</title>
-  <link rel="stylesheet" href="style.css">
-  <script src="script.js" defer></script>
-</head>
-<body>
-  <header class="site-header">
-    <a class="site-logo" href="index.html">Day 14</a>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Light / Dark Mode</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="site-logo" href="index.html">Luma</a>
 
-    <button class="theme-toggle" type="button" data-theme-toggle aria-label="Switch to dark mode">
-      <span class="theme-icon" data-theme-icon aria-hidden="true">☀️</span>
-      <span class="theme-label" data-theme-label>Light Mode</span>
-    </button>
-  </header>
+      <button
+        class="theme-toggle"
+        type="button"
+        data-theme-toggle
+        aria-label="Switch to dark mode"
+      >
+        <span class="theme-icon" data-theme-icon aria-hidden="true">☀️</span>
+        <span class="theme-label" data-theme-label>Light Mode</span>
+      </button>
+    </header>
 
-  <main>
-    <section class="hero" aria-labelledby="hero-title">
-      <p class="eyebrow">A clearer way to begin</p>
-      <h1 id="hero-title">Make the interface feel like yours.</h1>
-      <p class="hero-text">Choose the view that feels right for the moment. Your preference stays with you when you return.</p>
-    </section>
+    <main>
+      <section class="hero" aria-labelledby="hero-title">
+        <p class="eyebrow">A clearer way to begin</p>
+        <h1 id="hero-title">Make the interface feel like yours.</h1>
+        <p class="hero-text">
+          Choose the view that feels right for the moment. Your preference stays
+          with you when you return.
+        </p>
+      </section>
 
-    <section class="content-section" aria-labelledby="content-title">
-      <h2 id="content-title">Designed for focus</h2>
-      <p>Switch between a bright, open canvas and a darker, calmer view while keeping every detail easy to read.</p>
-    </section>
-  </main>
+      <section class="content-section" aria-labelledby="content-title">
+        <h2 id="content-title">Designed for focus</h2>
+        <p>
+          Switch between a bright, open canvas and a darker, calmer view while
+          keeping every detail easy to read.
+        </p>
+      </section>
+    </main>
 
-  <footer class="site-footer">
-    <p>Light / Dark Mode</p>
-  </footer>
-</body>
+    <footer class="site-footer">
+      <p>Light / Dark Mode</p>
+    </footer>
+
+    <script src="script.js"></script>
+  </body>
 </html>

@@ -38,6 +38,12 @@
         border-radius: 6px;
         font-size: 1rem;
     }
+    select {
+        padding: 10px 12px;
+        border: 1px solid #d0d7de;
+        border-radius: 6px;
+        font-size: 1rem;
+    }
     button {
         cursor: pointer;
         border: none;
@@ -96,6 +102,11 @@
     <h1>My Todos</h1>
     <form id="todo-form">
         <input type="text" id="todo-input" placeholder="What needs to be done?" autocomplete="off" required>
+        <select id="todo-priority">
+            <option value="LOW">Low</option>
+            <option value="MEDIUM" selected>Medium</option>
+            <option value="HIGH">High</option>
+        </select>
         <button type="submit">Add</button>
     </form>
     <ul id="todo-list"></ul>

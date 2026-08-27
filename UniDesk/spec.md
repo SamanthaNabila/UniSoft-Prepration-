@@ -296,12 +296,22 @@ src/
 
 ## 10. Error Handling & HTTP Status Codes
 
-The API enforces uniform, JSON-formatted error responses for all failed operations using FastAPI's standard exception format:
-
-````json
 {
   "detail": "Human-readable error explanation message."
-} ```
+}
+
+| Code | Status | Trigger Scenarios |
+| :--- | :--- | :--- |
+| **200** | OK | Request succeeded (e.g., retrieving tickets, successful update). |
+| **201** | Created | Entity created successfully (e.g., ticket created, comment added, user registered). |
+| **204** | No Content | Entity successfully deleted (e.g., ticket deletion). |
+| **400** | Bad Request | Validation failures or registration attempt with Name/Email not matching company whitelist. |
+| **401** | Unauthorized | Invalid, expired, or missing JWT token in authorization header. |
+| **403** | Forbidden | Role constraint violation (e.g., Agent creating ticket, Employee updating status or editing another's ticket). |
+| **404** | Not Found | Requested ticket ID, comment ID, or user resource does not exist. |
+| **409** | Conflict | Sign-up email already registered in the system database. |
+| **422** | Unprocessable Entity | Pydantic schema validation failure (e.g., title too short, invalid status value). |
+| **500** | Internal Server Error | Uncaught server exception or database connection failure. |
 
 {
   "detail": "Registration denied: Name or email not found in company records."
@@ -323,6 +333,5 @@ The API enforces uniform, JSON-formatted error responses for all failed operatio
       "type": "type_error.enum"
     }
   ]
-} 
-
+}
 

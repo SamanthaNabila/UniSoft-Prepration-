@@ -45,3 +45,7 @@ class Ticket(Base):
     comments = relationship(
         "Comment", back_populates="ticket", cascade="all, delete-orphan"
     )
+
+    @property
+    def created_by_name(self) -> str:
+        return self.creator.name

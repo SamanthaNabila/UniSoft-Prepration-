@@ -54,6 +54,7 @@ class TicketResponse(BaseModel):
     status: Status
     priority: Priority
     created_by: int
+    created_by_name: str
     created_at: datetime
     updated_at: datetime
 

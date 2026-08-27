@@ -20,3 +20,11 @@ class Comment(Base):
 
     ticket = relationship("Ticket", back_populates="comments")
     author = relationship("User", back_populates="comments")
+
+    @property
+    def author_name(self) -> str:
+        return self.author.name
+
+    @property
+    def author_role(self) -> str:
+        return self.author.role

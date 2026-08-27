@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Literal
 
 from pydantic import BaseModel, field_validator
 
@@ -19,6 +20,8 @@ class CommentResponse(BaseModel):
     id: int
     ticket_id: int
     user_id: int
+    author_name: str
+    author_role: Literal["employee", "support_agent"]
     content: str
     created_at: datetime
 

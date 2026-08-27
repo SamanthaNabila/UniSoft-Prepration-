@@ -301,7 +301,7 @@ The API enforces uniform, JSON-formatted error responses for all failed operatio
 ````json
 {
   "detail": "Human-readable error explanation message."
-}
+} ```
 
 {
   "detail": "Registration denied: Name or email not found in company records."

@@ -296,12 +296,22 @@ src/
 
 ## 10. Error Handling & HTTP Status Codes
 
-The API enforces uniform, JSON-formatted error responses for all failed operations using FastAPI's standard exception format:
-
-````json
 {
   "detail": "Human-readable error explanation message."
 }
+
+| Code | Status | Trigger Scenarios |
+| :--- | :--- | :--- |
+| **200** | OK | Request succeeded (e.g., retrieving tickets, successful update). |
+| **201** | Created | Entity created successfully (e.g., ticket created, comment added, user registered). |
+| **204** | No Content | Entity successfully deleted (e.g., ticket deletion). |
+| **400** | Bad Request | Validation failures or registration attempt with Name/Email not matching company whitelist. |
+| **401** | Unauthorized | Invalid, expired, or missing JWT token in authorization header. |
+| **403** | Forbidden | Role constraint violation (e.g., Agent creating ticket, Employee updating status or editing another's ticket). |
+| **404** | Not Found | Requested ticket ID, comment ID, or user resource does not exist. |
+| **409** | Conflict | Sign-up email already registered in the system database. |
+| **422** | Unprocessable Entity | Pydantic schema validation failure (e.g., title too short, invalid status value). |
+| **500** | Internal Server Error | Uncaught server exception or database connection failure. |
 
 {
   "detail": "Registration denied: Name or email not found in company records."
@@ -354,37 +364,3 @@ The backend suite enforces robust automated testing using `pytest` and `httpx` t
 * **Execution Command**:
   ```bash
   pytest --cov=app --cov-report=term-missing --cov-fail-under=70
-
-
-
-## 12. Deployment & Project Completion Checklist
-
-This checklist defines the final deliverables and verification steps required prior to releasing the UniDesk system for internal deployment.
-
-### 12.1 Backend Readiness (FastAPI & PostgreSQL)
-* [ ] Database migrations configured and verified using Alembic.
-* [ ] Environment variables defined in `.env` (`DATABASE_URL`, `SECRET_KEY`, `ALGORITHM`, `ACCESS_TOKEN_EXPIRE_MINUTES`).
-* [ ] CORS middleware configured to allow requests from the React frontend origin.
-* [ ] All Pydantic validation schemas enforced for incoming request payloads.
-* [ ] Standardized JSON error handling verified across all API endpoints.
-
-### 12.2 Frontend Readiness (React & Vite)
-* [ ] Client-side router configured with protected routes via `AuthContext`.
-* [ ] JWT storage and auto-attachment to Axios/Fetch headers implemented.
-* [ ] Dynamic UI adjustments fully functional:
-  * [ ] Employee view: Show "+ Create Ticket", allow editing/deleting own tickets only, restrict commenting to owned tickets.
-  * [ ] Support Agent view: Hide ticket creation CTA, enable status and priority dropdowns, enable commenting on all tickets.
-* [ ] Interactive status filter tabs and priority visual badges styled and functional.
-
-### 12.3 Quality Assurance & Security
-* [ ] Automated backend test suite passes with **≥ 70% overall code coverage**.
-* [ ] Whitelist registration logic thoroughly tested against valid and invalid name/email inputs.
-* [ ] Sensitive user credentials (passwords) confirmed to be hashed with Bcrypt before storing in DB.
-* [ ] API endpoints verified to prevent horizontal privilege escalation (employees editing/commenting on unowned tickets).
-
-### 12.4 Deployment & Execution
-* [ ] Database initialized with PostgreSQL service or Docker container.
-* [ ] Backend server executable via Uvicorn:
-  ```bash
-  uvicorn app.main:app --reload --port 8000
-````

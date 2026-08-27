@@ -27,10 +27,7 @@ This made the agent's workflow feel more like an iterative process rather than s
 
 ### Did the agent change its plan?
 
-Yes. After running commands or tests, the agent used the output to evaluate what had happened. When the result was not exactly what was expected, it changed its approach and continued working based on the new information.
-
-This showed me that the agent was not only following the original prompt. It was also using the results of its actions to decide what to do next.
-
+The agent did not need to significantly change its plan after running the command because the first implementation worked as expected.
 ### What I learned
 
 Today I understood the agent loop more clearly through actual observation.

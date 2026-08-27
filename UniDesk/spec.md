@@ -335,3 +335,32 @@ src/
   ]
 }
 
+## 11. Testing Strategy & Coverage Requirements
+
+The backend suite enforces robust automated testing using `pytest` and `httpx` to guarantee API correctness, strict validation rules, and proper Role-Based Access Control (RBAC).
+
+### 11.1 Test Suite Breakdown
+
+* **Authentication & Whitelist Tests (`tests/test_auth.py`)**:
+  * Verify registration success with valid pre-approved name and company email.
+  * Verify registration failure (`400 Bad Request`) when name/email is missing from the whitelist.
+  * Test duplicate email registration failure (`409 Conflict`).
+  * Verify JWT token issuance on valid login and rejection on invalid credentials.
+
+* **Authorization & RBAC Tests (`tests/test_rbac.py`)**:
+  * Verify Employees can successfully create tickets.
+  * Verify Support Agents are blocked (`403 Forbidden`) from creating tickets.
+  * Verify Support Agents can update status and priority on any ticket.
+  * Verify Employees are blocked (`403 Forbidden`) from updating ticket status/priority.
+  * Verify Employees can edit/delete only their own tickets and receive `403 Forbidden` for others' tickets.
+
+* **Comment Rules Tests (`tests/test_comments.py`)**:
+  * Verify Support Agents can comment on any ticket.
+  * Verify Employees can comment only on their own tickets and receive `403 Forbidden` when attempting to comment on another employee's ticket.
+
+### 11.2 Coverage Requirements
+* **Minimum Coverage Target**: Total test coverage across all FastAPI endpoints, models, and service logic must exceed **70%**.
+* **Coverage Tooling**: Managed via `pytest-cov`.
+* **Execution Command**:
+  ```bash
+  pytest --cov=app --cov-report=term-missing --cov-fail-under=70

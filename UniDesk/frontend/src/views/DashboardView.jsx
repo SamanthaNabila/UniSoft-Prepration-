@@ -4,12 +4,14 @@ import MetricsBar from "../components/dashboard/MetricsBar";
 import FilterTabs from "../components/dashboard/FilterTabs";
 import TicketSearch from "../components/dashboard/TicketSearch";
 import TicketCard from "../components/dashboard/TicketCard";
+import { useAuth } from "../context/AuthContext";
 import api from "../services/api";
 
 export default function DashboardView() {
   const [tickets, setTickets] = useState([]);
   const [stats, setStats] = useState(null);
   const [filter, setFilter] = useState("all");
+  const [assignmentFilter, setAssignmentFilter] = useState("all");
   const [search, setSearch] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
@@ -38,14 +40,20 @@ export default function DashboardView() {
     };
   }, [filter]);
 
+  const { user } = useAuth();
   const normalizedSearch = search.trim().toLowerCase();
-  const visibleTickets = normalizedSearch
-    ? tickets.filter((ticket) =>
-        [ticket.title, ticket.description, ticket.created_by_name].some(
-          (value) => value?.toLowerCase().includes(normalizedSearch),
-        ),
-      )
-    : tickets;
+  const visibleTickets = tickets.filter((ticket) => {
+    const matchesAssignment =
+      assignmentFilter === "all" ||
+      (assignmentFilter === "unassigned" && ticket.assigned_to === null) ||
+      (assignmentFilter === "mine" && ticket.assigned_to === user?.id);
+    const matchesSearch =
+      !normalizedSearch ||
+      [ticket.title, ticket.description, ticket.created_by_name].some(
+        (value) => value?.toLowerCase().includes(normalizedSearch),
+      );
+    return matchesAssignment && matchesSearch;
+  });
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -53,7 +61,12 @@ export default function DashboardView() {
       <main className="mx-auto max-w-5xl space-y-6 px-4 py-6">
         <MetricsBar stats={stats} />
         <TicketSearch value={search} onChange={setSearch} />
-        <FilterTabs active={filter} onChange={setFilter} />
+        <FilterTabs
+          active={filter}
+          onChange={setFilter}
+          assignmentFilter={assignmentFilter}
+          onAssignmentChange={setAssignmentFilter}
+        />
 
         {error && <p className="text-sm text-red-600">{error}</p>}
         {isLoading ? (

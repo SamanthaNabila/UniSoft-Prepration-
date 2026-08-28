@@ -47,6 +47,10 @@ class TicketStatusUpdate(BaseModel):
         return self
 
 
+class TicketAssignmentUpdate(BaseModel):
+    assigned_to: Optional[int] = None
+
+
 class TicketResponse(BaseModel):
     id: int
     title: str
@@ -55,6 +59,8 @@ class TicketResponse(BaseModel):
     priority: Priority
     created_by: int
     created_by_name: str
+    assigned_to: int | None = None
+    assigned_to_name: str | None = None
     created_at: datetime
     updated_at: datetime
 

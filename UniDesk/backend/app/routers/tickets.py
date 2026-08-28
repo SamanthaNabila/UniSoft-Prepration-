@@ -11,6 +11,7 @@ from app.models import Ticket, User
 from app.schemas.ticket import (
     Priority,
     Status,
+    TicketAssignmentUpdate,
     TicketCreate,
     TicketResponse,
     TicketStatsResponse,
@@ -140,6 +141,46 @@ def update_ticket_status(
         ticket.status = payload.status
     if payload.priority is not None:
         ticket.priority = payload.priority
+    db.commit()
+    db.refresh(ticket)
+    return ticket
+
+
+@router.patch("/{ticket_id}/assignment", response_model=TicketResponse)
+def update_ticket_assignment(
+    ticket_id: int,
+    payload: TicketAssignmentUpdate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+) -> Ticket:
+    if current_user.role != "support_agent":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Access denied: Only Support Agents can assign tickets.",
+        )
+
+    ticket = get_ticket_or_404(ticket_id, db)
+    if payload.assigned_to is None:
+        if ticket.assigned_to != current_user.id:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="You can only release your own ticket assignment.",
+            )
+        ticket.assigned_to = None
+    else:
+        assignee = db.get(User, payload.assigned_to)
+        if assignee is None:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Assignee not found.",
+            )
+        if assignee.role != "support_agent":
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Tickets can only be assigned to Support Agents.",
+            )
+        ticket.assigned_to = assignee.id
+
     db.commit()
     db.refresh(ticket)
     return ticket

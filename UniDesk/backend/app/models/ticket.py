@@ -31,6 +31,9 @@ class Ticket(Base):
     status = Column(String(20), nullable=False, default="open")
     priority = Column(String(10), nullable=False, default="medium")
     created_by = Column(Integer, ForeignKey("users.id"), nullable=False)
+    assigned_to = Column(
+        Integer, ForeignKey("users.id", ondelete="SET NULL"), nullable=True
+    )
     created_at = Column(
         DateTime(timezone=True), nullable=False, server_default=func.now()
     )
@@ -41,7 +44,12 @@ class Ticket(Base):
         onupdate=func.now(),
     )
 
-    creator = relationship("User", back_populates="tickets")
+    creator = relationship(
+        "User", foreign_keys=[created_by], back_populates="tickets"
+    )
+    assignee = relationship(
+        "User", foreign_keys=[assigned_to], back_populates="assigned_tickets"
+    )
     comments = relationship(
         "Comment", back_populates="ticket", cascade="all, delete-orphan"
     )
@@ -49,3 +57,7 @@ class Ticket(Base):
     @property
     def created_by_name(self) -> str:
         return self.creator.name
+
+    @property
+    def assigned_to_name(self) -> str | None:
+        return self.assignee.name if self.assignee else None

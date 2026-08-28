@@ -198,17 +198,7 @@ After a backend behavior change, run the focused test first, then the full backe
 
 Tests should cover successful behavior, invalid input, missing resources, authentication failures, role restrictions, ownership restrictions, and new edge cases.
 
-## Lessons From the Previous Five Tasks
 
-- Verify a requested UI change before editing; the `In Progress` label already existed, so the original Tiny task was redundant.
-- Keep search filtering client-side when the dashboard already loads all tickets; combine search with status and assignment filters without changing the API.
-- Status enum validation is not lifecycle validation; business transitions need explicit rules, focused tests, and backend enforcement.
-- Adding `assigned_to` created a second foreign-key path between users and tickets; both creator and assignee SQLAlchemy relationships required explicit foreign-key configuration.
-- A model change does not update an existing PostgreSQL database automatically; apply the Alembic migration and verify its revision before using the feature.
-- Assignment belongs on the existing `tickets` table; no additional assignment table is needed.
-- Run npm commands from `frontend/` and Python commands from `backend/`; a successful dependency installation does not prove the application database is ready.
-- Configuration, API, and test environments can differ; validate the real running service as well as the isolated test database.
-- When a requirement is ambiguous, ask before imposing a new workflow or permission rule.
 
 ## Final Response
 

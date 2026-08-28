@@ -3,6 +3,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom'
 import Navbar from '../components/common/Navbar'
 import StatusBadge from '../components/common/StatusBadge'
 import AgentControls from '../components/tickets/AgentControls'
+import AssignmentControls from '../components/tickets/AssignmentControls'
 import CommentForm from '../components/tickets/CommentForm'
 import CommentThread from '../components/tickets/CommentThread'
 import { useAuth } from '../context/AuthContext'
@@ -38,6 +39,13 @@ export default function TicketDetailView() {
 
   async function handleStatusUpdate(payload) {
     const response = await api.patch(`/tickets/${id}/status`, payload)
+    setTicket(response.data)
+  }
+
+  async function handleAssignmentUpdate(assignedTo) {
+    const response = await api.patch(`/tickets/${id}/assignment`, {
+      assigned_to: assignedTo,
+    })
     setTicket(response.data)
   }
 
@@ -93,6 +101,18 @@ export default function TicketDetailView() {
           <p className="mt-3 whitespace-pre-wrap text-sm text-gray-700">
             {ticket.description}
           </p>
+          <p className="mt-3 text-xs text-gray-400">
+            {ticket.assigned_to ? (
+              <>
+                Assigned to{' '}
+                <span className="font-medium text-gray-600">
+                  {ticket.assigned_to_name}
+                </span>
+              </>
+            ) : (
+              'Unassigned'
+            )}
+          </p>
           <div className="mt-4 flex flex-wrap items-center justify-between gap-2 text-xs text-gray-400">
             <span>
               Created by {ticket.created_by_name} on{' '}
@@ -118,7 +138,17 @@ export default function TicketDetailView() {
           </div>
         </div>
 
-        {isAgent && <AgentControls ticket={ticket} onUpdate={handleStatusUpdate} />}
+        {isAgent && (
+          <>
+            <AgentControls ticket={ticket} onUpdate={handleStatusUpdate} />
+            <AssignmentControls
+              ticket={ticket}
+              currentUserId={user.id}
+              onAssign={(assignedTo) => handleAssignmentUpdate(assignedTo)}
+              onRelease={() => handleAssignmentUpdate(null)}
+            />
+          </>
+        )}
 
         <div className="rounded-lg border border-gray-200 bg-white p-6">
           <h2 className="mb-4 text-sm font-semibold text-gray-900">Comments</h2>

@@ -1,15 +1,36 @@
 import axios from 'axios'
 
+const TOKEN_KEY = 'unidesk_token'
+const UNAUTHORIZED_EVENT = 'unidesk:unauthorized'
+
 const api = axios.create({
   baseURL: 'http://localhost:8000/api/v1',
 })
 
 api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('unidesk_token')
+  const token = localStorage.getItem(TOKEN_KEY)
   if (token) {
     config.headers.Authorization = `Bearer ${token}`
   }
   return config
 })
 
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      // Only clear/notify once per session expiry: once the token is gone,
+      // further 401s from requests already in flight are no-ops, which
+      // keeps a burst of failed requests from causing repeated redirects.
+      const hadToken = localStorage.getItem(TOKEN_KEY) !== null
+      if (hadToken) {
+        localStorage.removeItem(TOKEN_KEY)
+        window.dispatchEvent(new Event(UNAUTHORIZED_EVENT))
+      }
+    }
+    return Promise.reject(error)
+  },
+)
+
 export default api
+export { TOKEN_KEY, UNAUTHORIZED_EVENT }

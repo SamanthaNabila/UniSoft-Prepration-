@@ -23,7 +23,15 @@ class User(Base):
     )
 
     tickets = relationship(
-        "Ticket", back_populates="creator", cascade="all, delete-orphan"
+        "Ticket",
+        back_populates="creator",
+        cascade="all, delete-orphan",
+        foreign_keys="Ticket.created_by",
+    )
+    assigned_tickets = relationship(
+        "Ticket",
+        back_populates="assignee",
+        foreign_keys="Ticket.assigned_to",
     )
     comments = relationship(
         "Comment", back_populates="author", cascade="all, delete-orphan"

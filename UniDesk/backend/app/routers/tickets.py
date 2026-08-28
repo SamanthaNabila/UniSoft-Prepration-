@@ -6,11 +6,12 @@ from sqlalchemy.orm import Session
 
 from app.database import get_db
 from app.core.ticket_lifecycle import is_allowed_status_transition
-from app.dependencies import get_current_user
+from app.dependencies import get_current_user, require_role
 from app.models import Ticket, User
 from app.schemas.ticket import (
     Priority,
     Status,
+    TicketAssignmentUpdate,
     TicketCreate,
     TicketResponse,
     TicketStatsResponse,
@@ -21,6 +22,19 @@ from app.schemas.ticket import (
 router = APIRouter(prefix="/api/v1/tickets", tags=["tickets"])
 
 OWNERSHIP_DENIED_DETAIL = "Forbidden: You are only allowed to modify or delete your own tickets."
+ASSIGNMENT_DENIED_DETAIL = "Access denied: Only Support Agents can assign or release tickets."
+
+require_employee = require_role(
+    "employee",
+    "Access denied: Support Agents are not allowed to create tickets.",
+)
+require_support_agent_for_status = require_role(
+    "support_agent",
+    "Access denied: Only Support Agents can update ticket status or priority.",
+)
+require_support_agent_for_assignment = require_role(
+    "support_agent", ASSIGNMENT_DENIED_DETAIL
+)
 
 
 def get_ticket_or_404(ticket_id: int, db: Session) -> Ticket:
@@ -36,14 +50,8 @@ def get_ticket_or_404(ticket_id: int, db: Session) -> Ticket:
 def create_ticket(
     payload: TicketCreate,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_employee),
 ) -> Ticket:
-    if current_user.role != "employee":
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Access denied: Support Agents are not allowed to create tickets.",
-        )
-
     ticket = Ticket(
         title=payload.title,
         description=payload.description,
@@ -77,6 +85,7 @@ def get_ticket_stats(
 def list_tickets(
     status_filter: Optional[Status] = Query(None, alias="status"),
     priority_filter: Optional[Priority] = Query(None, alias="priority"),
+    assigned_to_filter: Optional[str] = Query(None, alias="assigned_to"),
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ) -> list[Ticket]:
@@ -85,6 +94,10 @@ def list_tickets(
         query = query.filter(Ticket.status == status_filter)
     if priority_filter is not None:
         query = query.filter(Ticket.priority == priority_filter)
+    if assigned_to_filter == "unassigned":
+        query = query.filter(Ticket.assigned_to.is_(None))
+    elif assigned_to_filter == "me":
+        query = query.filter(Ticket.assigned_to == current_user.id)
     return query.order_by(Ticket.created_at.desc()).all()
 
 
@@ -122,14 +135,8 @@ def update_ticket_status(
     ticket_id: int,
     payload: TicketStatusUpdate,
     db: Session = Depends(get_db),
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_support_agent_for_status),
 ) -> Ticket:
-    if current_user.role != "support_agent":
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Access denied: Only Support Agents can update ticket status or priority.",
-        )
-
     ticket = get_ticket_or_404(ticket_id, db)
     if payload.status is not None:
         if not is_allowed_status_transition(ticket.status, payload.status):
@@ -140,6 +147,34 @@ def update_ticket_status(
         ticket.status = payload.status
     if payload.priority is not None:
         ticket.priority = payload.priority
+    db.commit()
+    db.refresh(ticket)
+    return ticket
+
+
+@router.patch("/{ticket_id}/assignment", response_model=TicketResponse)
+def update_ticket_assignment(
+    ticket_id: int,
+    payload: TicketAssignmentUpdate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_support_agent_for_assignment),
+) -> Ticket:
+    ticket = get_ticket_or_404(ticket_id, db)
+
+    if payload.assigned_to is not None:
+        target_user = db.get(User, payload.assigned_to)
+        if target_user is None:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Assignment target user not found.",
+            )
+        if target_user.role != "support_agent":
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Only Support Agents can be assigned to tickets.",
+            )
+
+    ticket.assigned_to = payload.assigned_to
     db.commit()
     db.refresh(ticket)
     return ticket

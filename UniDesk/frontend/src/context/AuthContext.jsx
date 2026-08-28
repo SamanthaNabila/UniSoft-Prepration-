@@ -1,13 +1,26 @@
 import { createContext, useContext, useEffect, useState } from 'react'
-import api from '../services/api'
+import api, { TOKEN_KEY, UNAUTHORIZED_EVENT } from '../services/api'
 
-const TOKEN_KEY = 'unidesk_token'
 const AuthContext = createContext(null)
 
 export function AuthProvider({ children }) {
   const [token, setToken] = useState(() => localStorage.getItem(TOKEN_KEY))
   const [user, setUser] = useState(null)
   const [isLoading, setIsLoading] = useState(true)
+
+  // The Axios interceptor clears the stored token and fires this event for
+  // any 401 from any request, not just the bootstrap check below - so an
+  // expired/invalidated session gets cleared consistently everywhere.
+  useEffect(() => {
+    function handleUnauthorized() {
+      setToken(null)
+      setUser(null)
+      setIsLoading(false)
+    }
+
+    window.addEventListener(UNAUTHORIZED_EVENT, handleUnauthorized)
+    return () => window.removeEventListener(UNAUTHORIZED_EVENT, handleUnauthorized)
+  }, [])
 
   useEffect(() => {
     let ignore = false

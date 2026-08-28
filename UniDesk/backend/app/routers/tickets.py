@@ -5,6 +5,7 @@ from sqlalchemy import func
 from sqlalchemy.orm import Session
 
 from app.database import get_db
+from app.core.ticket_lifecycle import is_allowed_status_transition
 from app.dependencies import get_current_user
 from app.models import Ticket, User
 from app.schemas.ticket import (
@@ -131,6 +132,11 @@ def update_ticket_status(
 
     ticket = get_ticket_or_404(ticket_id, db)
     if payload.status is not None:
+        if not is_allowed_status_transition(ticket.status, payload.status):
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail=f"Invalid ticket status transition: {ticket.status} -> {payload.status}.",
+            )
         ticket.status = payload.status
     if payload.priority is not None:
         ticket.priority = payload.priority

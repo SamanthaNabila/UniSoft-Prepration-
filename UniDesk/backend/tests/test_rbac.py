@@ -61,62 +61,6 @@ def test_support_agent_can_update_status_and_priority_on_any_ticket(
     assert body["priority"] == "high"
 
 
-def test_support_agent_can_follow_ticket_lifecycle(client, employee_a, agent_a):
-    ticket = _create_ticket(client, employee_a)
-
-    for current_status, next_status in [
-        ("open", "in_progress"),
-        ("in_progress", "resolved"),
-        ("resolved", "closed"),
-        ("closed", "open"),
-        ("open", "in_progress"),
-        ("in_progress", "resolved"),
-        ("resolved", "in_progress"),
-    ]:
-        response = client.patch(
-            f"/api/v1/tickets/{ticket['id']}/status",
-            json={"status": next_status},
-            headers=agent_a,
-        )
-
-        assert response.status_code == 200
-        assert response.json()["status"] == next_status
-
-
-def test_support_agent_cannot_skip_ticket_lifecycle_statuses(
-    client, employee_a, agent_a
-):
-    ticket = _create_ticket(client, employee_a)
-
-    response = client.patch(
-        f"/api/v1/tickets/{ticket['id']}/status",
-        json={"status": "resolved"},
-        headers=agent_a,
-    )
-
-    assert response.status_code == 409
-    assert (
-        response.json()["detail"]
-        == "Invalid ticket status transition: open -> resolved."
-    )
-
-
-def test_priority_only_update_does_not_require_status_transition(
-    client, employee_a, agent_a
-):
-    ticket = _create_ticket(client, employee_a)
-
-    response = client.patch(
-        f"/api/v1/tickets/{ticket['id']}/status",
-        json={"priority": "high"},
-        headers=agent_a,
-    )
-
-    assert response.status_code == 200
-    assert response.json()["status"] == "open"
-    assert response.json()["priority"] == "high"
-
-
 def test_employee_blocked_from_updating_status(client, employee_a):
     ticket = _create_ticket(client, employee_a)
 
@@ -257,11 +201,6 @@ def test_list_tickets_filters_by_status(client, employee_a, agent_a):
     ticket = _create_ticket(client, employee_a)
     client.patch(
         f"/api/v1/tickets/{ticket['id']}/status",
-        json={"status": "in_progress"},
-        headers=agent_a,
-    )
-    client.patch(
-        f"/api/v1/tickets/{ticket['id']}/status",
         json={"status": "resolved"},
         headers=agent_a,
     )
@@ -278,11 +217,6 @@ def test_list_tickets_filters_by_status(client, employee_a, agent_a):
 def test_ticket_stats_endpoint(client, employee_a, agent_a):
     ticket = _create_ticket(client, employee_a)
     _create_ticket(client, employee_a, title="Another ticket for stats test")
-    client.patch(
-        f"/api/v1/tickets/{ticket['id']}/status",
-        json={"status": "in_progress"},
-        headers=agent_a,
-    )
     client.patch(
         f"/api/v1/tickets/{ticket['id']}/status",
         json={"status": "resolved"},

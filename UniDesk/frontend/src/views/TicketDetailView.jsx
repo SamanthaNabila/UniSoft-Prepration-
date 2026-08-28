@@ -15,7 +15,6 @@ export default function TicketDetailView() {
 
   const [ticket, setTicket] = useState(null)
   const [comments, setComments] = useState([])
-  const [agents, setAgents] = useState([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState('')
 
@@ -37,11 +36,6 @@ export default function TicketDetailView() {
       .finally(() => setIsLoading(false))
   }, [loadTicket])
 
-  useEffect(() => {
-    if (user?.role !== 'support_agent') return
-    api.get('/users/support-agents').then((response) => setAgents(response.data))
-  }, [user?.role])
-
   async function handleStatusUpdate(payload) {
     const response = await api.patch(`/tickets/${id}/status`, payload)
     setTicket(response.data)
@@ -50,13 +44,6 @@ export default function TicketDetailView() {
   async function handleAddComment(content) {
     const response = await api.post(`/tickets/${id}/comments`, { content })
     setComments((prev) => [...prev, response.data])
-  }
-
-  async function handleAssignmentUpdate(assignedTo) {
-    const response = await api.patch(`/tickets/${id}/assignment`, {
-      assigned_to: assignedTo,
-    })
-    setTicket(response.data)
   }
 
   async function handleDelete() {
@@ -111,7 +98,6 @@ export default function TicketDetailView() {
               Created by {ticket.created_by_name} on{' '}
               {new Date(ticket.created_at).toLocaleString()}
             </span>
-            <span>Assigned to: {ticket.assigned_to_name || 'Unassigned'}</span>
             {isOwner && (
               <div className="flex gap-3">
                 <Link
@@ -132,14 +118,7 @@ export default function TicketDetailView() {
           </div>
         </div>
 
-        {isAgent && (
-          <AgentControls
-            ticket={ticket}
-            agents={agents}
-            onUpdate={handleStatusUpdate}
-            onAssignmentUpdate={handleAssignmentUpdate}
-          />
-        )}
+        {isAgent && <AgentControls ticket={ticket} onUpdate={handleStatusUpdate} />}
 
         <div className="rounded-lg border border-gray-200 bg-white p-6">
           <h2 className="mb-4 text-sm font-semibold text-gray-900">Comments</h2>

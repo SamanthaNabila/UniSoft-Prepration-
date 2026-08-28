@@ -20,12 +20,7 @@ export default function TicketCard({ ticket }) {
       <div className="mt-3 flex flex-wrap items-center justify-between gap-2 text-xs text-gray-400">
         <div className="flex items-center gap-2">
           <StatusBadge type="status" value={ticket.status} />
-          <span>
-            by {ticket.created_by_name} -{' '}
-            {ticket.assigned_to_name
-              ? `Assigned to ${ticket.assigned_to_name}`
-              : 'Unassigned'}
-          </span>
+          <span>by {ticket.created_by_name}</span>
         </div>
         <span>{new Date(ticket.created_at).toLocaleString()}</span>
       </div>

@@ -3,12 +3,7 @@ import { useState } from 'react'
 const STATUS_OPTIONS = ['open', 'in_progress', 'resolved', 'closed']
 const PRIORITY_OPTIONS = ['low', 'medium', 'high']
 
-export default function AgentControls({
-  ticket,
-  agents,
-  onUpdate,
-  onAssignmentUpdate,
-}) {
+export default function AgentControls({ ticket, onUpdate }) {
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
 
@@ -19,18 +14,6 @@ export default function AgentControls({
       await onUpdate({ [field]: value })
     } catch (err) {
       setError(err.response?.data?.detail ?? 'Failed to update ticket.')
-    } finally {
-      setSaving(false)
-    }
-  }
-
-  async function handleAssignmentChange(value) {
-    setSaving(true)
-    setError('')
-    try {
-      await onAssignmentUpdate(value)
-    } catch (err) {
-      setError(err.response?.data?.detail ?? 'Failed to update assignment.')
     } finally {
       setSaving(false)
     }
@@ -66,26 +49,6 @@ export default function AgentControls({
             {PRIORITY_OPTIONS.map((option) => (
               <option key={option} value={option}>
                 {option}
-              </option>
-            ))}
-          </select>
-        </label>
-        <label className="flex flex-col gap-1 text-sm text-gray-600">
-          Assigned agent
-          <select
-            value={ticket.assigned_to ?? ''}
-            onChange={(event) =>
-              handleAssignmentChange(
-                event.target.value ? Number(event.target.value) : null,
-              )
-            }
-            disabled={saving}
-            className="rounded-md border border-gray-300 px-2 py-1 text-sm"
-          >
-            <option value="">Unassigned</option>
-            {agents.map((agent) => (
-              <option key={agent.id} value={agent.id}>
-                {agent.name}
               </option>
             ))}
           </select>

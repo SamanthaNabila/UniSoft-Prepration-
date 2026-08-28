@@ -24,7 +24,7 @@ def get_current_user(
         raise credentials_exception from exc
 
     user_id = payload.get("sub")
-    if user_id is None:
+    if not isinstance(user_id, str) or not user_id.isdigit():
         raise credentials_exception
 
     user = db.get(User, int(user_id))
@@ -32,3 +32,21 @@ def get_current_user(
         raise credentials_exception
 
     return user
+
+
+def require_employee(current_user: User = Depends(get_current_user)) -> User:
+    if current_user.role != "employee":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Access denied: Support Agents are not allowed to create tickets.",
+        )
+    return current_user
+
+
+def require_support_agent(current_user: User = Depends(get_current_user)) -> User:
+    if current_user.role != "support_agent":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Access denied: Only Support Agents can update ticket status or priority.",
+        )
+    return current_user

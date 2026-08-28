@@ -1,11 +1,11 @@
-import { Link } from 'react-router-dom'
-import StatusBadge from '../common/StatusBadge'
+import { Link } from "react-router-dom";
+import StatusBadge from "../common/StatusBadge";
 
 export default function TicketCard({ ticket }) {
   const snippet =
     ticket.description.length > 120
       ? `${ticket.description.slice(0, 120)}...`
-      : ticket.description
+      : ticket.description;
 
   return (
     <Link
@@ -21,14 +21,14 @@ export default function TicketCard({ ticket }) {
         <div className="flex items-center gap-2">
           <StatusBadge type="status" value={ticket.status} />
           <span>
-            by {ticket.created_by_name} -{' '}
+            by {ticket.created_by_name} -{" "}
             {ticket.assigned_to_name
               ? `Assigned to ${ticket.assigned_to_name}`
-              : 'Unassigned'}
+              : "Unassigned"}
           </span>
         </div>
         <span>{new Date(ticket.created_at).toLocaleString()}</span>
       </div>
     </Link>
-  )
+  );
 }

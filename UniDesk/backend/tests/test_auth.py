@@ -1,4 +1,9 @@
 from app.core.whitelist import MOCK_EMPLOYEE_WHITELIST
+from app.core.config import settings
+from app.core.security import create_access_token
+from app.models import User
+from tests.conftest import TestingSessionLocal
+from datetime import timedelta
 
 EMPLOYEE = next(e for e in MOCK_EMPLOYEE_WHITELIST if e["role"] == "employee")
 AGENT = next(e for e in MOCK_EMPLOYEE_WHITELIST if e["role"] == "support_agent")
@@ -160,3 +165,86 @@ def test_get_me_rejects_invalid_token(client):
     )
 
     assert response.status_code == 401
+
+
+def test_get_me_rejects_token_with_missing_subject(client):
+    token = create_access_token(data={"role": "employee"})
+
+    response = client.get(
+        "/api/v1/auth/me", headers={"Authorization": f"Bearer {token}"}
+    )
+
+    assert response.status_code == 401
+    assert response.json()["detail"] == "Could not validate credentials"
+
+
+def test_get_me_rejects_token_with_non_integer_subject(client):
+    token = create_access_token(data={"sub": "not-an-integer", "role": "employee"})
+
+    response = client.get(
+        "/api/v1/auth/me", headers={"Authorization": f"Bearer {token}"}
+    )
+
+    assert response.status_code == 401
+    assert response.json()["detail"] == "Could not validate credentials"
+
+
+def test_get_me_rejects_expired_token(client):
+    token = create_access_token(
+        data={"sub": "1", "role": "employee"},
+        expires_delta=timedelta(seconds=-1),
+    )
+
+    response = client.get(
+        "/api/v1/auth/me", headers={"Authorization": f"Bearer {token}"}
+    )
+
+    assert response.status_code == 401
+
+
+def test_get_me_rejects_token_for_nonexistent_user(client):
+    token = create_access_token(data={"sub": "99999", "role": "employee"})
+
+    response = client.get(
+        "/api/v1/auth/me", headers={"Authorization": f"Bearer {token}"}
+    )
+
+    assert response.status_code == 401
+
+
+def test_get_me_rejects_token_signed_with_invalid_secret(client):
+    from jose import jwt
+
+    token = jwt.encode(
+        {"sub": "1", "role": "employee"}, "wrong-secret", algorithm=settings.ALGORITHM
+    )
+
+    response = client.get(
+        "/api/v1/auth/me", headers={"Authorization": f"Bearer {token}"}
+    )
+
+    assert response.status_code == 401
+
+
+def test_get_me_uses_database_role_over_stale_token_claim(client):
+    client.post("/api/v1/auth/register", json=_register_payload(EMPLOYEE))
+    login_response = client.post(
+        "/api/v1/auth/login",
+        json={"email": EMPLOYEE["email"], "password": VALID_PASSWORD},
+    )
+    token = login_response.json()["access_token"]
+
+    db = TestingSessionLocal()
+    try:
+        user = db.query(User).filter(User.email == EMPLOYEE["email"]).one()
+        user.role = "support_agent"
+        db.commit()
+    finally:
+        db.close()
+
+    response = client.get(
+        "/api/v1/auth/me", headers={"Authorization": f"Bearer {token}"}
+    )
+
+    assert response.status_code == 200
+    assert response.json()["role"] == "support_agent"

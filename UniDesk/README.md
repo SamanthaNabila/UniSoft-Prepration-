@@ -191,7 +191,7 @@ pytest --cov=app --cov-report=term-missing --cov-fail-under=70
 ---
 
 ## 7. Project Structure
-11111111111
+
 ```
 UniDesk/
 ├── backend/            # FastAPI application

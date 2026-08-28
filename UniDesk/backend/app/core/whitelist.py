@@ -3,12 +3,6 @@ MOCK_EMPLOYEE_WHITELIST = [
     {"name": "Bob Martinez", "email": "bob.martinez@unidesk.com", "role": "employee"},
     {"name": "Charlie Nguyen", "email": "charlie.nguyen@unidesk.com", "role": "support_agent"},
     {"name": "Diana Osei", "email": "diana.osei@unidesk.com", "role": "support_agent"},
-    {"name": "Nabila", "email": "nabila@unidesk.com", "role": "employee"},
-    {"name": "Samantha", "email": "samantha@unidesk.com", "role": "employee"},
-    {"name": "Ashik", "email": "ashik@unidesk.com", "role": "employee"},
-    {"name": "Opy", "email": "opy@unidesk.com", "role": "employee"},
-    {"name": "Jannatul", "email": "jannatul@unidesk.com", "role": "support_agent"},
-    {"name": "Safa", "email": "safa@unidesk.com", "role": "support_agent"},
 ]
 
 

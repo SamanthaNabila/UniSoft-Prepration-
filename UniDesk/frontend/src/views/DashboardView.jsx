@@ -49,8 +49,8 @@ export default function DashboardView() {
       (assignmentFilter === "mine" && ticket.assigned_to === user?.id);
     const matchesSearch =
       !normalizedSearch ||
-      [ticket.title, ticket.description, ticket.created_by_name].some((value) =>
-        value?.toLowerCase().includes(normalizedSearch),
+      [ticket.title, ticket.description, ticket.created_by_name].some(
+        (value) => value?.toLowerCase().includes(normalizedSearch),
       );
     return matchesAssignment && matchesSearch;
   });

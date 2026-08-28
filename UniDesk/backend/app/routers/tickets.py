@@ -5,7 +5,7 @@ from sqlalchemy import func
 from sqlalchemy.orm import Session
 
 from app.database import get_db
-from app.dependencies import get_current_user, require_employee, require_support_agent
+from app.dependencies import get_current_user
 from app.core.ticket_lifecycle import is_allowed_status_transition
 from app.models import Ticket, User
 from app.schemas.ticket import (
@@ -37,8 +37,14 @@ def get_ticket_or_404(ticket_id: int, db: Session) -> Ticket:
 def create_ticket(
     payload: TicketCreate,
     db: Session = Depends(get_db),
-    current_user: User = Depends(require_employee),
+    current_user: User = Depends(get_current_user),
 ) -> Ticket:
+    if current_user.role != "employee":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Access denied: Support Agents are not allowed to create tickets.",
+        )
+
     ticket = Ticket(
         title=payload.title,
         description=payload.description,
@@ -97,10 +103,10 @@ def update_ticket(
     ticket_id: int,
     payload: TicketUpdate,
     db: Session = Depends(get_db),
-    current_user: User = Depends(require_employee),
+    current_user: User = Depends(get_current_user),
 ) -> Ticket:
     ticket = get_ticket_or_404(ticket_id, db)
-    if ticket.created_by != current_user.id:
+    if current_user.role != "employee" or ticket.created_by != current_user.id:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN, detail=OWNERSHIP_DENIED_DETAIL
         )
@@ -117,8 +123,14 @@ def update_ticket_status(
     ticket_id: int,
     payload: TicketStatusUpdate,
     db: Session = Depends(get_db),
-    current_user: User = Depends(require_support_agent),
+    current_user: User = Depends(get_current_user),
 ) -> Ticket:
+    if current_user.role != "support_agent":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Access denied: Only Support Agents can update ticket status or priority.",
+        )
+
     ticket = get_ticket_or_404(ticket_id, db)
     if payload.status is not None:
         if not is_allowed_status_transition(ticket.status, payload.status):
@@ -139,8 +151,14 @@ def update_ticket_assignment(
     ticket_id: int,
     payload: TicketAssignmentUpdate,
     db: Session = Depends(get_db),
-    current_user: User = Depends(require_support_agent),
+    current_user: User = Depends(get_current_user),
 ) -> Ticket:
+    if current_user.role != "support_agent":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Access denied: Only Support Agents can assign tickets.",
+        )
+
     ticket = get_ticket_or_404(ticket_id, db)
     if payload.assigned_to is None:
         if ticket.assigned_to != current_user.id:
@@ -172,10 +190,10 @@ def update_ticket_assignment(
 def delete_ticket(
     ticket_id: int,
     db: Session = Depends(get_db),
-    current_user: User = Depends(require_employee),
+    current_user: User = Depends(get_current_user),
 ) -> None:
     ticket = get_ticket_or_404(ticket_id, db)
-    if ticket.created_by != current_user.id:
+    if current_user.role != "employee" or ticket.created_by != current_user.id:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN, detail=OWNERSHIP_DENIED_DETAIL
         )

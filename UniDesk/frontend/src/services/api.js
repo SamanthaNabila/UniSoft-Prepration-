@@ -1,26 +1,15 @@
-import axios from "axios";
+import axios from 'axios'
 
 const api = axios.create({
-  baseURL: "http://localhost:8000/api/v1",
-});
+  baseURL: 'http://localhost:8000/api/v1',
+})
 
 api.interceptors.request.use((config) => {
-  const token = localStorage.getItem("unidesk_token");
+  const token = localStorage.getItem('unidesk_token')
   if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
+    config.headers.Authorization = `Bearer ${token}`
   }
-  return config;
-});
+  return config
+})
 
-api.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    if (error.response?.status === 401) {
-      localStorage.removeItem("unidesk_token");
-      window.dispatchEvent(new Event("unidesk:unauthorized"));
-    }
-    return Promise.reject(error);
-  },
-);
-
-export default api;
+export default api

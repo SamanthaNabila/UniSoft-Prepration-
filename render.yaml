@@ -1,0 +1,36 @@
+# Render Blueprint for the UniDesk public demo.
+# Render reads this file from the REPOSITORY ROOT (this monorepo holds several
+# projects; UniDesk lives in ./UniDesk). One web service (Docker) serves both the
+# React SPA and the FastAPI API on a single onrender.com URL, backed by a free
+# managed Postgres that Render provisions and wires in automatically.
+#
+# Deploy: Render dashboard -> New -> Blueprint -> pick this repo -> Apply.
+# The public URL is the web service's onrender.com address.
+
+databases:
+  - name: unidesk-demo-db
+    plan: free            # free Postgres is deleted ~30 days after creation — fine for a throwaway demo
+    databaseName: unidesk
+    user: unidesk
+
+services:
+  - type: web
+    name: unidesk-demo
+    runtime: docker
+    plan: free             # spins down after ~15 min idle; ~1 min cold start
+    rootDir: UniDesk
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    healthCheckPath: /health
+    autoDeploy: false       # redeploy manually so the demo URL stays stable
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: unidesk-demo-db
+          property: connectionString
+      - key: SECRET_KEY
+        generateValue: true   # fresh 256-bit value, created by Render, never in git
+      - key: ALGORITHM
+        value: HS256
+      - key: ACCESS_TOKEN_EXPIRE_MINUTES
+        value: "60"

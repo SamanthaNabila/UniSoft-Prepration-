@@ -4,7 +4,10 @@ const TOKEN_KEY = 'unidesk_token'
 const UNAUTHORIZED_EVENT = 'unidesk:unauthorized'
 
 const api = axios.create({
-  baseURL: 'http://localhost:8000/api/v1',
+  // Configurable for deployment. Unset (local dev / tests) keeps the original
+  // localhost default; the demo image builds with VITE_API_BASE_URL=/api/v1
+  // so the SPA calls the same origin that serves it.
+  baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api/v1',
 })
 
 api.interceptors.request.use((config) => {

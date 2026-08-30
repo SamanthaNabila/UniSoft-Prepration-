@@ -5,7 +5,6 @@
 >
 > *(Free hosting — the first visit may take ~1 minute to wake up.)*<br>
 > So, this is a demo project. I'm sharing the details of two whitelisted accounts—one Employee and one Support Agent—so you can sign up and explore my application.
-<br>
 >  <b>Support Agent:</b> name:Jannatul <br> Email:jannatul@unidesk.com  <br>
 > <b>Employee:</b> name:samantha <br>  Email:samantha@unidesk.com <br>
 

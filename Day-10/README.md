@@ -2,8 +2,8 @@
 
 ## Repository
 
-SamanthaNabila/pyffmpegcore
-link:https://github.com/SamanthaNabila/pyffmpegcore
+SamanthaNabila/pyffmpegcore <br>
+Repository link:https://github.com/SamanthaNabila/pyffmpegcore
 
 ## Commit
 

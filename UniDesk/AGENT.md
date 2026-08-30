@@ -22,37 +22,6 @@ UniDesk is an internal IT support ticketing system. Employees report IT problems
 
 ## Roles and Permissions
 
-### Employee
-
-Employees may:
-
-- Register only with a matching approved whitelist name and email.
-- Log in and view all tickets and dashboard statistics.
-- Create tickets with a title, description, and initial priority.
-- Edit and delete only tickets they created.
-- Comment only on tickets they created.
-
-Employees may not:
-
-- Change ticket status.
-- Change ticket priority through agent controls.
-- Create tickets for other users.
-- Edit, delete, or comment on another employee's ticket.
-- Assign tickets.
-
-### Support Agent
-
-Support Agents may:
-
-- Register only with a matching approved Support Agent whitelist entry.
-- View all tickets, comments, and statistics.
-- Change ticket status and priority.
-- Comment on any ticket.
-- Assign or reassign tickets to Support Agents.
-- Release their own ticket assignment.
-
-Support Agents may not create tickets or edit/delete ticket content as an employee owner.
-
 Backend authorization is authoritative. Frontend restrictions are for navigation and user experience only.
 
 ## Business Rules

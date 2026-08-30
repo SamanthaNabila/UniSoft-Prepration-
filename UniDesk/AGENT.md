@@ -18,22 +18,7 @@ UniDesk is an internal IT support ticketing system. Employees report IT problems
 - Frontend: React, Vite, React Router, Axios, Tailwind CSS.
 - Testing: pytest, pytest-cov, HTTPX/TestClient.
 
-## Project Structure
 
-- `backend/app/main.py`: FastAPI application and router registration.
-- `backend/app/database.py`: SQLAlchemy engine, sessions, and `get_db`.
-- `backend/app/core/`: configuration, security, whitelist, and domain helpers.
-- `backend/app/dependencies.py`: authentication and authorization dependencies.
-- `backend/app/models/`: SQLAlchemy models for users, tickets, and comments.
-- `backend/app/schemas/`: Pydantic request and response schemas.
-- `backend/app/routers/`: authentication, tickets, comments, and user endpoints.
-- `backend/alembic/versions/`: database migrations.
-- `backend/tests/`: backend API, validation, authentication, and RBAC tests.
-- `frontend/src/App.jsx`: client-side routes.
-- `frontend/src/context/AuthContext.jsx`: frontend authentication state.
-- `frontend/src/services/api.js`: Axios client and authorization handling.
-- `frontend/src/views/`: page-level UI.
-- `frontend/src/components/`: reusable UI components.
 
 ## Roles and Permissions
 

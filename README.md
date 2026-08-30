@@ -5,7 +5,7 @@
 >
 > *(Free hosting — the first visit may take ~1 minute to wake up.)*<br>
 > So, this is a demo task so I am sharing two of my whitelisted employee and support Agrnt details so you can sign-up and visit to my application <br>
->  <b>Support Agent:</b> name:Jannatul   Email:jannatul@unidesk.com <br>
+>  <b>Support Agent:</b> name:Jannatul <span>  Email:jannatul@unidesk.com </span> <br>
 > <b>Employee:</b> name:samantha   Email:samantha@unidesk.com <br>
 
 

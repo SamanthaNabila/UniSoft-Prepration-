@@ -1,7 +1,7 @@
 import unittest
 from decimal import Decimal
 
-from discount import apply_discount
+from discount import apply_discount, order_summary
 
 
 class ApplyDiscountTests(unittest.TestCase):
@@ -60,6 +60,51 @@ class ApplyDiscountTests(unittest.TestCase):
         self.assertEqual(apply_discount(items, Decimal("0")), Decimal("0.02"))
 
 
+
+class OrderSummaryTests(unittest.TestCase):
+    def test_totals_a_single_item(self) -> None:
+        items = [{"name": "Notebook", "unit_price": Decimal("12.50"), "quantity": 2}]
+
+        self.assertEqual(order_summary(items), Decimal("25.00"))
+
+    def test_totals_multiple_items(self) -> None:
+        items = [
+            {"name": "Notebook", "unit_price": Decimal("12.50"), "quantity": 2},
+            {"name": "Pen", "unit_price": Decimal("1.25"), "quantity": 3},
+        ]
+
+        self.assertEqual(order_summary(items), Decimal("28.75"))
+
+    def test_ignores_items_with_zero_quantity(self) -> None:
+        items = [
+            {"name": "Notebook", "unit_price": Decimal("12.50"), "quantity": 2},
+            {"name": "Pen", "unit_price": Decimal("1.25"), "quantity": 0},
+        ]
+
+        self.assertEqual(order_summary(items), Decimal("25.00"))
+
+    def test_rejects_negative_quantity(self) -> None:
+        items = [{"name": "Notebook", "unit_price": Decimal("12.50"), "quantity": -1}]
+
+        with self.assertRaises(ValueError):
+            order_summary(items)
+
+    def test_totals_decimal_prices(self) -> None:
+        items = [
+            {"name": "Cable", "unit_price": Decimal("19.99"), "quantity": 3},
+            {"name": "Adapter", "unit_price": Decimal("4.05"), "quantity": 2},
+        ]
+
+        result = order_summary(items)
+
+        self.assertEqual(result, Decimal("68.07"))
+        self.assertEqual(result.as_tuple().exponent, -2)
+
+    def test_empty_order_totals_zero(self) -> None:
+        result = order_summary([])
+
+        self.assertEqual(result, Decimal("0.00"))
+        self.assertEqual(result.as_tuple().exponent, -2)
 
 
 if __name__ == "__main__":

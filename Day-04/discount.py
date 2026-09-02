@@ -37,3 +37,14 @@ def apply_discount(items: list[Item], discount_percent: Decimal) -> Decimal:
         Decimal("0"),
     )
     return discounted_total.quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+
+
+def order_summary(items: list[Item]) -> Decimal:
+    """Return the invoice total for an order, rounding each line half-up.
+
+    Lines with a quantity of 0 contribute nothing, and an empty order totals 0.00.
+    """
+    if not items:
+        return Decimal("0.00")
+
+    return apply_discount(items, Decimal("0"))

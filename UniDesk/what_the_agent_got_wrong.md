@@ -134,33 +134,4 @@ are listed here so the results can be read with the right amount of trust.
 
 ---
 
-## 5. What was *not* affected
 
-- Every **confirmed bug** in the huge-input and two-click reports was verified a
-  second way — server-log traceback (`PasswordSizeError`, `RecursionError`,
-  `IntegrityError`) and/or direct DB row counts — not just the script's verdict.
-- The **missing-authentication** pass (all PASS) and the **empty-input** pass
-  (all PASS bar cosmetic notes) are unaffected by the issues above; the one
-  false FAIL in the empty-input harness was identified and explained.
-- Database state was restored to its baseline **row counts** after every run
-  (sequence values excepted, per 4.1).
-
----
-
-## 6. Corrective checklist for next time
-
-1. Spin up a throwaway DB (or a transaction-rollback fixture); never write test
-   data — especially large rows — to a production DB without explicit sign-off,
-   and disclose sequence-gap side effects.
-2. Don't trust the harness's own PASS/FAIL line — reconcile every verdict
-   against logs / DB state before reporting.
-3. Loop every race test many times and build the genuinely-conflicting
-   scenario, not just the same-payload burst.
-4. Verify the runtime environment (correct venv, real library versions) before
-   the first real call.
-5. When a test can't actually send its payload (client-side error), mark it
-   "not tested," not "ok."
-6. Separate "demonstrated defect" from "missing defense in depth" in the verdict
-   column, not only in the prose.
-7. Confirm root cause from the traceback before writing the mechanism into a
-   report.
